@@ -1,0 +1,3 @@
+*.o
+build_dummy
+build_normal
