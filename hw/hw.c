@@ -1,5 +1,5 @@
 #include "hw.h"
 
-int read_xxx(void) {
+int read_xxx() {
     return 1;
 }

@@ -1,50 +1,61 @@
-# Compiler và flags
+# Compiler
 CC = gcc
 CFLAGS = -Wall -Wextra -I.
 
-# Tên file thực thi
-TARGET_NORMAL = build_normal
-TARGET_DUMMY = build_dummy
+# Target executables
+TARGET_NORMAL = program_normal
+TARGET_DUMMY = program_dummy
 
-# File object
-OBJ_NORMAL = main.o hw.o
-OBJ_DUMMY = main.o hw_dummy.o
+# Source files
+SRC_NORMAL = main.c hw/hw.c
+SRC_DUMMY = main.c hw_dummy/hw.c
 
-# Mặc định build cả 2 chế độ
+# Object files
+OBJ_NORMAL = $(SRC_NORMAL:.c=.o)
+OBJ_DUMMY = $(SRC_DUMMY:.c=.o)
+
+# Default target
 all: normal dummy
 
-# Build chế độ bình thường
+# Normal mode
 normal: $(TARGET_NORMAL)
 
 $(TARGET_NORMAL): $(OBJ_NORMAL)
 	$(CC) $(CFLAGS) -o $@ $^
 
-main.o: main.c hw.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-hw.o: hw.c hw.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Build chế độ dummy
+# Dummy mode
 dummy: $(TARGET_DUMMY)
 
 $(TARGET_DUMMY): $(OBJ_DUMMY)
 	$(CC) $(CFLAGS) -o $@ $^
 
-hw_dummy.o: hw_dummy.c hw.h
+# Pattern rule for object files
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean file object và executable
-clean:
-	rm -f *.o $(TARGET_NORMAL) $(TARGET_DUMMY)
+# Generate compile_commands.json
+compiledb:
+	bear -- make clean all
 
-# Chạy chương trình ở cả 2 chế độ
-run: normal dummy
-	@echo "=== Chay che do binh thuong ==="
+# Or using compiledb tool (alternative)
+# compiledb:
+#	compiledb make clean all
+
+# Clean
+clean:
+	rm -f $(OBJ_NORMAL) $(OBJ_DUMMY) $(TARGET_NORMAL) $(TARGET_DUMMY)
+
+# Run
+run-normal: normal
 	./$(TARGET_NORMAL)
-	@echo ""
-	@echo "=== Chay che do dummy ==="
+
+run-dummy: dummy
 	./$(TARGET_DUMMY)
 
-# Phony targets
-.PHONY: all normal dummy clean run
+run: normal dummy
+	@echo "=== Normal version ==="
+	./$(TARGET_NORMAL)
+	@echo "\n=== Dummy version ==="
+	./$(TARGET_DUMMY)
+
+.PHONY: all normal dummy clean run-normal run-dummy run compiledb

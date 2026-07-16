@@ -1,0 +1,47 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I.",
+      "-c",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/home/hung/fpt/dummy2",
+    "file": "/home/hung/fpt/dummy2/main.c",
+    "output": "/home/hung/fpt/dummy2/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I.",
+      "-c",
+      "-o",
+      "hw/hw.o",
+      "hw/hw.c"
+    ],
+    "directory": "/home/hung/fpt/dummy2",
+    "file": "/home/hung/fpt/dummy2/hw/hw.c",
+    "output": "/home/hung/fpt/dummy2/hw/hw.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I.",
+      "-c",
+      "-o",
+      "hw_dummy/hw.o",
+      "hw_dummy/hw.c"
+    ],
+    "directory": "/home/hung/fpt/dummy2",
+    "file": "/home/hung/fpt/dummy2/hw_dummy/hw.c",
+    "output": "/home/hung/fpt/dummy2/hw_dummy/hw.o"
+  }
+]
