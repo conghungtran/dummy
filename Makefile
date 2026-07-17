@@ -2,35 +2,51 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -I.
 
-# Target executables
-TARGET_NORMAL = program_normal
-TARGET_DUMMY = program_dummy
+# Directories
+OBJ_DIR = obj
+BIN_DIR = bin
+
+# Target executables (with path)
+TARGET_NORMAL = $(BIN_DIR)/program_normal
+TARGET_DUMMY = $(BIN_DIR)/program_dummy
 
 # Source files
 SRC_NORMAL = main.c hw/hw.c
 SRC_DUMMY = main.c hw_dummy/hw.c
 
-# Object files
-OBJ_NORMAL = $(SRC_NORMAL:.c=.o)
-OBJ_DUMMY = $(SRC_DUMMY:.c=.o)
+# Object files (all in obj directory, use basename to avoid duplicates)
+OBJ_NORMAL = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_NORMAL:.c=.o)))
+OBJ_DUMMY = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_DUMMY:.c=.o)))
 
 # Default target
-all: normal dummy
+all: $(BIN_DIR) $(OBJ_DIR) normal dummy
+
+# Create directories if they don't exist
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
 # Normal mode
 normal: $(TARGET_NORMAL)
 
-$(TARGET_NORMAL): $(OBJ_NORMAL)
+$(TARGET_NORMAL): $(OBJ_NORMAL) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Dummy mode
 dummy: $(TARGET_DUMMY)
 
-$(TARGET_DUMMY): $(OBJ_DUMMY)
+$(TARGET_DUMMY): $(OBJ_DUMMY) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Pattern rule for object files
-%.o: %.c
+# Compile main.c
+$(OBJ_DIR)/main.o: main.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile hw/hw.c
+$(OBJ_DIR)/hw.o: hw/hw.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile hw_dummy/hw.c
+$(OBJ_DIR)/hw_dummy.o: hw_dummy/hw.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Generate compile_commands.json
@@ -43,7 +59,7 @@ compiledb:
 
 # Clean
 clean:
-	rm -f $(OBJ_NORMAL) $(OBJ_DUMMY) $(TARGET_NORMAL) $(TARGET_DUMMY)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 # Run
 run-normal: normal
