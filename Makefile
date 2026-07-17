@@ -14,15 +14,19 @@ TARGET_DUMMY = $(BIN_DIR)/program_dummy
 SRC_NORMAL = main.c hw/hw.c
 SRC_DUMMY = main.c hw_dummy/hw.c
 
-# Object files (all in obj directory, use basename to avoid duplicates)
-OBJ_NORMAL = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_NORMAL:.c=.o)))
-OBJ_DUMMY = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_DUMMY:.c=.o)))
+# Object files (keep directory structure)
+OBJ_NORMAL = $(SRC_NORMAL:%.c=$(OBJ_DIR)/%.o)
+OBJ_DUMMY = $(SRC_DUMMY:%.c=$(OBJ_DIR)/%.o)
 
 # Default target
 all: $(BIN_DIR) $(OBJ_DIR) normal dummy
 
 # Create directories if they don't exist
 $(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
+
+# Create subdirectories for object files
+$(OBJ_DIR)/hw $(OBJ_DIR)/hw_dummy:
 	mkdir -p $@
 
 # Normal mode
@@ -37,16 +41,9 @@ dummy: $(TARGET_DUMMY)
 $(TARGET_DUMMY): $(OBJ_DUMMY) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Compile main.c
-$(OBJ_DIR)/main.o: main.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Compile hw/hw.c
-$(OBJ_DIR)/hw.o: hw/hw.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Compile hw_dummy/hw.c
-$(OBJ_DIR)/hw_dummy.o: hw_dummy/hw.c | $(OBJ_DIR)
+# Pattern rule for object files
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Generate compile_commands.json
